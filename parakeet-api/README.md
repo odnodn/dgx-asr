@@ -1,0 +1,261 @@
+# Parakeet API
+
+OpenAI Whisper-compatible API endpoint for Parakeet STT models. (MLX for Apple Silicon, Sherpa-ONNX for others)
+
+Performance on a 3.85s wav file:
+
+| Machine (Engine)              | Latency (ms) | Speedup |
+| :---------------------------- | :----------- | :------ |
+| Intel 255H (Sherpa-ONNX, CPU) | 174.46       | 22.1x   |
+| M2 Air (MLX, GPU)             | 194.29       | 19.8x   |
+
+## Installation & Setup
+
+The easiest way to install and run parakeet-api is using [uv](https://github.com/astral-sh/uv).
+
+### 1. Install the CLI
+
+**For Linux, Windows, or Intel Mac (Sherpa-ONNX / CPU):**
+
+```bash
+uv tool install parakeet-api
+```
+
+**For Apple Silicon (MLX):**
+
+```bash
+uv tool install "parakeet-api[mlx]"
+```
+
+### 2. Install System Dependencies
+
+ffmpeg must be installed on your system for non-WAV audio support.
+
+- **macOS:** brew install ffmpeg
+- **Ubuntu/Debian:** sudo apt-get install ffmpeg
+
+### 3. Download Models
+
+Models are saved to your platform's standard data directory (e.g., ~/.local/share/parakeet-api/models).
+
+#### Default Models
+
+Download the default English/European model for your engine:
+
+**Sherpa-ONNX:**
+
+```bash
+parakeet-api download sherpa
+```
+
+**MLX:**
+
+```bash
+parakeet-api download mlx
+```
+
+#### Custom Models
+
+You can use different Parakeet models by specifying a URL or Repo ID.
+
+**Sherpa-ONNX:**
+
+- [Sherpa-ONNX Pretrained Models](https://k2-fsa.github.io/sherpa/onnx/pretrained_models/index.html)
+- [Sherpa-ONNX GitHub Releases](https://github.com/k2-fsa/sherpa-onnx/releases/tag/asr-models)
+
+1. Download using the script with --url:
+   ```bash
+   parakeet-api download sherpa --url https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-nemo-parakeet-tdt_ctc-0.6b-ja-35000-int8.tar.bz2
+   ```
+   For hotwords support on Transducer models (e.g. Parakeet TDT), also generate bpe.vocab:
+   ```bash
+   parakeet-api download sherpa --generate-bpe-vocab
+   ```
+2. Update STT__SHERPA__MODEL_ID in your .env (or set as environment variable):
+   ```env
+   STT__SHERPA__MODEL_ID=sherpa-onnx-nemo-parakeet-tdt_ctc-0.6b-ja-35000-int8
+   ```
+
+> [!NOTE]
+> The default model is a NeMo Parakeet TDT (Transducer). Other architectures like Zipformer (e.g. `sherpa-onnx-zipformer-ja-reazonspeech-2024-08-01`) are also supported but must be downloaded manually via `--url`.
+
+**MLX:**
+
+- [Parakeet - a mlx-community Collection](https://huggingface.co/collections/mlx-community/parakeet)
+
+1. Download using the script with --id:
+   ```bash
+   parakeet-api download mlx --id mlx-community/parakeet-tdt_ctc-0.6b-ja
+   ```
+2. Update STT__MLX__MODEL_ID in your .env (or set as environment variable):
+   ```env
+   STT__MLX__MODEL_ID=mlx-community/parakeet-tdt_ctc-0.6b-ja
+   ```
+
+### 4. Run the Server
+
+```bash
+parakeet-api serve
+```
+
+The API will be available at http://localhost:8816.
+
+### 5. (Optional) Run as a Background Service
+
+You can install parakeet-api as a background service (launchd on macOS, systemd on Linux).
+
+```bash
+parakeet-api install-daemon
+```
+
+This will create a service file and set up a configuration file (e.g. `~/.local/share/parakeet-api/.env`).
+To uninstall: `parakeet-api uninstall-daemon`
+
+## Running with Docker (Sherpa-ONNX)
+
+For Linux or CPU environments, you can use Docker and Docker Compose.
+
+```bash
+# Download .env.example
+curl -o .env.example https://github.com/likeablob/parakeet-api/raw/refs/heads/main/.env.example
+
+# Edit .env to set your SERVER__API_KEY and other settings
+cp .env.example .env
+editor .env
+
+# Create compose.yaml
+cat << 'EOF' > compose.yaml
+services:
+  api:
+    image: ghcr.io/likeablob/parakeet-api:latest
+    ports:
+      - "8816:8816"
+    env_file:
+      - .env
+    volumes:
+      - type: bind
+        source: ./models
+        target: /app/models
+    environment:
+      - SERVER__HOST=0.0.0.0
+      - SERVER__PORT=8816
+      - STT__MODELS_DIR=/app/models
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+EOF
+
+# Download model
+mkdir models
+docker compose run --rm api download sherpa --out /app/models
+
+# Start the server
+docker compose up -d
+```
+
+## Usage
+
+### API Endpoints
+
+#### POST /v1/audio/transcriptions
+
+Transcribe audio to text using the OpenAI Whisper-compatible API format.
+
+**Example with curl:**
+
+```bash
+curl -X POST "http://localhost:8816/v1/audio/transcriptions" \
+  -H "Content-Type: multipart/form-data" \
+  -F "file=@/path/to/audio.wav" \
+  -F "response_format=json"
+```
+
+#### POST /v1/audio/transcriptions/raw
+
+Same as above but accepts raw audio bytes in the request body.
+
+```bash
+curl -X POST "http://localhost:8816/v1/audio/transcriptions/raw" \
+  -H "Content-Type: audio/wav" \
+  --data-binary @/path/to/audio.wav
+```
+
+### Supported Parameters
+
+| Parameter                 | Type   | Default     | Description                                                                |
+| ------------------------- | ------ | ----------- | -------------------------------------------------------------------------- |
+| file                      | file   | -           | The audio file to transcribe.                                              |
+| response_format           | string | json        | json, text, verbose_json, srt, vtt.                                        |
+| timestamp_granularities[] | array  | ["segment"] | word, segment (used with verbose_json).                                    |
+| hotwords                  | string | -           | Comma-separated hotwords for contextual biasing (e.g. `OpenAI:2.5,GPT-4`). |
+
+> [!NOTE]
+> **Limitations of Response Formats:**
+> The current implementation provides simplified timestamp information. Consequently:
+>
+> - **srt / vtt**: Return a single segment covering the entire audio duration (0.0 to end).
+> - **verbose_json**: Timestamps for words and segments are placeholders/estimations.
+
+> [!NOTE]
+> **Ignored Parameters:** The following parameters are accepted for compatibility with the OpenAI API but are currently **ignored**:
+> model, language, prompt, temperature.
+>
+> **Hotwords (Extension):** The `hotwords` parameter is a parakeet-api extension for contextual biasing. Supported on Sherpa-ONNX **Transducer** models only (NeMo TDT, Zipformer, Conformer). CTC models do not support hotwords. Requires `bpe.vocab` for NeMo TDT models (generate via `parakeet-api download sherpa --generate-bpe-vocab`).
+
+### Examples
+
+Check the examples/ directory for client implementations:
+
+- examples/client_requests.py: Basic transcription using requests.
+- examples/client_openai_sdk.py: Using the official OpenAI Python SDK.
+
+For full API compatibility details, refer to the [OpenAI Audio API Reference](https://platform.openai.com/docs/api-reference/audio) and their [OpenAPI specification](https://github.com/openai/openai-openapi).
+
+## Development
+
+### Setup from Source
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/likeablob/parakeet-api.git
+   cd parakeet-api
+   ```
+2. **Install dependencies:**
+   ```bash
+   # Includes dev tools (ruff, ty, pytest, pre-commit) and optional mlx support
+   uv sync --all-extras --dev
+   ```
+3. **Install pre-commit hooks:**
+   ```bash
+   uv run pre-commit install
+   ```
+4. **Run:**
+   ```bash
+   uv run parakeet-api serve
+   ```
+
+### Code Quality & Tests
+
+```bash
+# Linting & Formatting
+uv run ruff check .
+uv run ruff format .
+
+# Type Checking
+uv run ty check src/ tests/
+
+# Run Tests
+uv run pytest tests/mock
+uv run pytest tests/inference # Requires models
+```
+
+## Related Projects
+
+- [push-to-whisper](https://github.com/likeablob/push-to-whisper): Push key to record audio & STT.
+
+## License
+
+MIT
