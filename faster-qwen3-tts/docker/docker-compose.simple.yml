@@ -1,0 +1,41 @@
+services:
+  faster-qwen3-tts:
+    image: martinb78/faster-qwen3-tts-dgx-spark:latest
+    container_name: faster-qwen3-tts
+    restart: unless-stopped
+    runtime: nvidia
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      # Optional: set HF_TOKEN if model needs downloading from HuggingFace
+      # - HF_TOKEN=${HF_TOKEN}
+    ports:
+      - "8020:8000"
+    volumes:
+      # Mount your local Qwen3-TTS model (download first, see README)
+      - ${MODEL_PATH:-../models/Qwen3-TTS}:/models/Qwen3-TTS:ro
+      # Config directory (voices.json generated on startup)
+      - ../config:/config:rw
+      # Speaker reference audio files
+      - ../config/speakers:/voices:ro
+    command: >
+      /bin/bash -c "
+      python3 /config/generate_voices.py &&
+      python3 /config/run_server.py
+      --model /models/Qwen3-TTS
+      --voices /config/voices.json
+      --port 8000
+      --max-seq-len 2048
+      "
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    networks:
+      - dgx_net
+
+networks:
+  dgx_net:
+    external: true
