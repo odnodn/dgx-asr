@@ -1,0 +1,290 @@
+# Medical Vocabulary for German ASR Enhancement
+# One term per line. Lines starting with # are comments.
+# This file is used for post-processing corrections to improve recognition
+# of medical terms in transcribed German text.
+#
+# Categories:
+# - Diagnoses / Diseases
+# - Symptoms
+# - Procedures / Examinations
+# - Medications / Brand Names
+# - Abbreviations
+# - Anatomy
+# - Medical Specialties
+
+# ─── Diagnoses / Diseases ───────────────────────────────────────────────────────
+Migräne
+Migräne mit Aura
+Spannungskopfschmerz
+Clusterkopfschmerz
+Epilepsie
+Multiple Sklerose
+Morbus Parkinson
+Parkinson-Syndrom
+Alzheimer-Demenz
+Schlaganfall
+Hirninfarkt
+Transitorische ischämische Attacke
+Hirnblutung
+Subarachnoidalblutung
+Meningitis
+Enzephalitis
+Polyneuropathie
+Karpaltunnelsyndrom
+Bandscheibenvorfall
+Spinalkanalstenose
+Guillain-Barré-Syndrom
+Myasthenia gravis
+Amyotrophe Lateralsklerose
+Trigeminusneuralgie
+Restless-Legs-Syndrom
+Narkolepsie
+Hydrozephalus
+Hirntumore
+Glioblastom
+Meningeom
+Diabetes mellitus
+Hypertonie
+Hypotonie
+Herzinsuffizienz
+Koronare Herzkrankheit
+Myokardinfarkt
+Vorhofflimmern
+Lungenembolie
+Pneumonie
+Asthma bronchiale
+COPD
+Hypothyreose
+Hyperthyreose
+Niereninsuffizienz
+Leberzirrhose
+Gastritis
+Refluxösophagitis
+Colitis ulcerosa
+Morbus Crohn
+Depression
+Angststörung
+Schizophrenie
+Bipolare Störung
+
+# ─── Symptoms ───────────────────────────────────────────────────────────────────
+Kopfschmerzen
+Schwindel
+Übelkeit
+Erbrechen
+Dyspnoe
+Tachykardie
+Bradykardie
+Synkope
+Parästhesien
+Dysästhesien
+Hemiparese
+Hemiplegie
+Tetraparese
+Aphasie
+Dysarthrie
+Dysphagie
+Ataxie
+Tremor
+Myoklonien
+Faszikulationen
+Nystagmus
+Diplopie
+Amaurose
+Hypästhesie
+Hyperästhesie
+Allodynie
+Rigor
+Spastik
+Areflexie
+Hyperreflexie
+
+# ─── Procedures / Examinations ──────────────────────────────────────────────────
+Magnetresonanztomographie
+MRT
+Computertomographie
+CT
+Elektroenzephalographie
+EEG
+Elektromyographie
+EMG
+Elektroneurographie
+ENG
+Lumbalpunktion
+Liquordiagnostik
+Dopplersonographie
+Duplexsonographie
+Angiographie
+Echokardiographie
+Spirometrie
+Endoskopie
+Koloskopie
+Gastroskopie
+Biopsie
+Blutgasanalyse
+Langzeit-EKG
+Langzeit-Blutdruckmessung
+Polysomnographie
+Evozierte Potentiale
+Karotis-Doppler
+Nervenleitgeschwindigkeit
+
+# ─── Medications / Brand Names ──────────────────────────────────────────────────
+Ibuprofen
+Paracetamol
+Metamizol
+Novalgin
+Aspirin
+Acetylsalicylsäure
+Diclofenac
+Voltaren
+Tramadol
+Morphin
+Pregabalin
+Lyrica
+Gabapentin
+Carbamazepin
+Tegretal
+Valproat
+Levetiracetam
+Keppra
+Lamotrigin
+Topiramat
+Topamax
+Sumatriptan
+Imigran
+Amitriptylin
+Duloxetin
+Cymbalta
+Venlafaxin
+Sertralin
+Citalopram
+Escitalopram
+Mirtazapin
+Levodopa
+Madopar
+Pramipexol
+Ropinirol
+Rasagilin
+Donepezil
+Aricept
+Rivastigmin
+Memantine
+Methylprednisolon
+Prednisolon
+Dexamethason
+Methotrexat
+Azathioprin
+Natalizumab
+Tysabri
+Ocrelizumab
+Ocrevus
+Fingolimod
+Gilenya
+Metformin
+Insulin
+Ramipril
+Amlodipin
+Metoprolol
+Bisoprolol
+Atorvastatin
+Simvastatin
+Apixaban
+Eliquis
+Rivaroxaban
+Xarelto
+Marcumar
+Phenprocoumon
+Heparin
+Omeprazol
+Pantoprazol
+L-Thyroxin
+Levothyroxin
+
+# ─── Abbreviations ──────────────────────────────────────────────────────────────
+TIA
+ALS
+MS
+GBS
+EKG
+HWS
+BWS
+LWS
+BMI
+GFR
+CRP
+BSG
+TSH
+INR
+PTT
+GOT
+GPT
+GGT
+LDH
+CK
+HbA1c
+BGA
+RR
+SpO2
+GCS
+NIHSS
+mRS
+EDSS
+VAS
+NRS
+
+# ─── Anatomy ────────────────────────────────────────────────────────────────────
+Zerebrum
+Zerebellum
+Hirnstamm
+Medulla oblongata
+Pons
+Mesenzephalon
+Thalamus
+Hypothalamus
+Hippocampus
+Amygdala
+Basalganglien
+Corpus callosum
+Frontallappen
+Temporallappen
+Parietallappen
+Okzipitallappen
+Rückenmark
+Spinalnerven
+Plexus brachialis
+Plexus lumbosacralis
+Nervus medianus
+Nervus ulnaris
+Nervus radialis
+Nervus ischiadicus
+Nervus facialis
+Nervus trigeminus
+Nervus vagus
+Karotis
+Vertebralarterie
+Basilararterie
+
+# ─── Medical Specialties ────────────────────────────────────────────────────────
+Neurologie
+Kardiologie
+Pneumologie
+Gastroenterologie
+Endokrinologie
+Nephrologie
+Rheumatologie
+Onkologie
+Psychiatrie
+Radiologie
+Anästhesiologie
+Chirurgie
+Orthopädie
+Innere Medizin
+Allgemeinmedizin
+Notfallmedizin
+Intensivmedizin
+Palliativmedizin
+Rehabilitation
+Physiotherapie
+Ergotherapie
+Logopädie
